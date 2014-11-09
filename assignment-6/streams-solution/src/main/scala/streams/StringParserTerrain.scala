@@ -52,7 +52,31 @@ trait StringParserTerrain extends GameDef {
    * a valid position (not a '-' character) inside the terrain described
    * by `levelVector`.
    */
-  def terrainFunction(levelVector: Vector[Vector[Char]]): Pos => Boolean = ???
+  def terrainFunction(levelVector: Vector[Vector[Char]]): Pos => Boolean = {
+    position: Pos => validPosition(levelVector, position)
+  }
+  
+  def validPosition(levelVector: Vector[Vector[Char]], position: Pos) : Boolean = {
+
+      def calculateValidPosition(levelVector: Vector[Vector[Char]], position: Pos, xAxis: Int): Boolean = {
+         if (levelVector.isEmpty) false
+         else {
+           if (position.row == xAxis) validColumn(levelVector.head, position.col)
+           else calculateValidPosition(levelVector.tail, position, xAxis+1)
+         }
+
+      }
+
+      calculateValidPosition(levelVector, position, 0)
+  }
+
+  def validColumn(row: Vector[Char], yPosition: Int) : Boolean = {
+    if (yPosition >= row.size || yPosition < 0) false
+    else row(yPosition) match  {
+      case ('o'|'S'|'T') => true
+      case _ => false
+    }
+  }
 
   /**
    * This function should return the position of character `c` in the
@@ -62,7 +86,19 @@ trait StringParserTerrain extends GameDef {
    * Hint: you can use the functions `indexWhere` and / or `indexOf` of the
    * `Vector` class
    */
-  def findChar(c: Char, levelVector: Vector[Vector[Char]]): Pos = ???
+  def findChar(c: Char, levelVector: Vector[Vector[Char]]): Pos = {
+    def obtainPositionOfChar(c: Char, levelVector: Vector[Vector[Char]], xAxis: Int): Pos = {
+         if (levelVector.isEmpty) new Pos(-1,-1)
+         else {
+           val yAxisOfChar = levelVector.head.indexOf(c,0)
+           yAxisOfChar match {
+             case x if x == -1 => obtainPositionOfChar(c, levelVector.tail, xAxis+1)
+             case _  => new Pos(xAxis, yAxisOfChar)
+            }
+         }
+    }
+    obtainPositionOfChar(c, levelVector, 0)
+  }
 
   private lazy val vector: Vector[Vector[Char]] =
     Vector(level.split("\n").map(str => Vector(str: _*)): _*)
