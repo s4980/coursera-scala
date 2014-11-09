@@ -1,0 +1,9 @@
+test
+run
+compile
+styleCheck
+compile
+test
+run
+submit michal.ziarnik@vce.com Tq9xXgfVt9
+:quit
